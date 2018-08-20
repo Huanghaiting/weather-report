@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>天气预报</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+
+		<script src="js/mui.min.js"></script>
+		<style type="text/css">
+			body {
+				background: rgb(255, 255, 255);
+			}
+			
+			li {
+				list-style-type: none;
+			}
+			
+			#cityName {
+				font-size: 30px;
+				display: inline-block;
+				margin-top: 5px;
+			}
+			
+			.change {
+				display: inline-block;
+				font-size: 14px;
+				border: 1px solid #0062CC;
+				border-radius: 10px;
+				padding: 1px;
+			}
+			
+			#update_time {
+				float: right;
+				font-size: 15px;
+			}
+			
+			.bg_foot {
+				border-right: 1px solid silver;
+				text-align: center;
+				margin-top: 10px;
+			}
+			
+			#show_tem {
+				font-size: 60px;
+				margin-top: 20px;
+				color: #000000;
+			}
+			
+			.ziti a {
+				color: #000000;
+				font-size: 15px;
+			}
+			#api{
+				border: 1px solid #4CD964;
+				border-radius: 10px;
+				padding: 1px;
+				width: 60%;
+				text-align: center;
+				background: #4CD964;
+				
+			}
+			#main {
+				background: rgb(255, 255, 255);
+			}
+			.btn{
+				width: 90%;
+				margin: 0 auto;
+				
+			}
+			#future {
+				
+				width: 100%;
+				border-radius: 10px;
+				background: #0062CC;
+				color: #FFFFFF;
+			}
+			
+			.mui-content {
+				margin-top: 20px;
+			}
+			
+			.mui-media-body {
+				height: 100%;
+			}
+			
+			#footer {
+				margin-top: 20px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="nav">
+			<span class="mui-icon mui-icon-location"></span>
+			<div id="cityName"></div>
+			<div class="change">
+				<a id="change_city">切换</a>
+			</div>
+			<div id="update_time"></div>
+		</div>
+
+		<div class="header">
+
+			<div class="mui-row">
+				<div class="mui-col-sm-6 mui-col-xs-6">
+					<li class="mui-table-view-cell">
+						<p id="show_tem"></p>
+					</li>
+				</div>
+				<div id="info" class="mui-col-sm-6 mui-col-xs-6">
+
+					</li>
+				</div>
+			</div>
+		</div>
+		<div id="main" class="mui-content">
+
+		</div>
+		<div class="btn">
+
+			<button type="button" id="future" class="mui-btn mui-btn-outlined">10天预报</button>
+		</div>
+
+		<div id="footer">
+
+		</div>
+
+		<script type="text/javascript">
+			mui.init()
+
+			var url1 ='http://tj.nineton.cn/Heart/index/all?city=CHGD000000';
+
+			mui.plusReady(function() {
+				var cityName = document.getElementById('cityName');
+				var update_time = document.getElementById('update_time');
+				var tem = document.getElementById('show_tem');
+				var side = document.getElementById('info');
+				var main = document.getElementById('main');
+				var foot = document.getElementById('footer');
+				var a = document.getElementById('change_city');
+				var data_ = {};
+				var url_ = url1;
+				mui('.change').on('tap', '#change_city', function() {
+					alert("该功能正在开发中，请耐心等待");
+				});
+				mui.get(url_, data_, function(data) {
+					cityName.innerHTML = data.weather[0].city_name;
+					var a = data.weather[0].last_update;
+					var d = new Date(a);
+					update_time.innerHTML = d.toLocaleTimeString() + '更新';
+					tem.innerHTML = data.weather[0].now.temperature + '℃';
+
+					var nows = data.weather[0].now;
+
+					side.innerHTML = '<li class="mui-table-view-cell"><p id="api"><a>' +
+						nows.air_quality.city.aqi + '&nbsp' + nows.air_quality.city.quality +
+						'</a></p><p><a>' + nows.wind_direction + '风&nbsp' + nows.wind_scale +
+						'级</a></p><p><a>相对湿度&nbsp' + nows.humidity + '%' + '</a></p></li>';
+
+					var futureDay = data.weather[0].future;
+					var lis = '';
+					for(var i = 0; i < 5; i++) {
+						lis +=
+							'<div class="mui-row"><div class="mui-col-sm-4 mui-col-xs-4"><li class="mui-table-view-cell"><p class="ziti"><a href="">' +
+							futureDay[i].day + '</a></p></div><div class="mui-col-sm-4 mui-col-xs-4"><li class="mui-table-view-cell"><p class="ziti"><a href="">' +
+							futureDay[i].high + '℃~' + futureDay[i].low +
+							'</a></p></li></div><div class="mui-col-sm-4 mui-col-xs-3"><li class="mui-table-view-cell"><p class="ziti"><a href="">' +
+							futureDay[i].text + '</a></p></li></div>';
+
+					}
+
+					main.innerHTML = lis;
+					var suggestion = data.weather[0].today.suggestion;
+					foot.innerHTML = '<p>生活小贴士</p><ul class="mui-table-view"><li class="mui-table-view-cell mui-collapse"><a class="mui-navigate-right" href="#">穿衣指数：' +
+						suggestion.dressing.brief + '</a><div class="mui-collapse-content"><div class="mui-collapse-content"><p>' + suggestion.dressing.details +
+						'</p></div></li><li class="mui-table-view-cell mui-collapse"><a class="mui-navigate-right" href="#">紫外线指数：' +
+						suggestion.uv.brief + '</a><div class="mui-collapse-content"><p>' + suggestion.uv.details +
+						'</p></div></li><li class="mui-table-view-cell mui-collapse"><a class="mui-navigate-right" href="#">洗车指数：' + suggestion.car_washing.brief +
+						'</a><div class="mui-collapse-content"><p>' + suggestion.car_washing.details +
+						'</p></div></li><li class="mui-table-view-cell mui-collapse"><a class="mui-navigate-right" href="#">旅行指数：' + suggestion.travel.brief +
+						'</a><div class="mui-collapse-content"><p>' + suggestion.travel.details +
+						'</p></div></li><li class="mui-table-view-cell mui-collapse"><a class="mui-navigate-right" href="#">流感指数：' + suggestion.flu.brief +
+						'</a><div class="mui-collapse-content"><p>' + suggestion.flu.details +
+						'</p></div></li><li class="mui-table-view-cell mui-collapse"><a class="mui-navigate-right" href="#">运动指数：' + suggestion.sport.brief +
+						'</a><div class="mui-collapse-content"><p>' + suggestion.sport.details + '</p></div></li></ul>';
+
+				}, 'json');
+			});
+
+			mui('.btn').on('tap', '#future', function() {
+				mui.openWindow({
+					url: 'future.html',
+
+				});
+			});
+		</script>
+	</body>
+
+</html>
